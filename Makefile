@@ -26,6 +26,9 @@ DATE = $(shell date +%s)
 
 PWD = $(shell pwd)
 
+pull:
+	git pull
+
 platform-docker:
 	docker run -it --rm --entrypoint /bin/sh ${NI_TAG} -c 'echo `uname -s`-`uname -m`' > ${PLATFORM}
 
@@ -72,4 +75,4 @@ deploy: upload-version deploy-version
 set-webhook:
 	curl 'https://api.telegram.org/bot$(token)/setWebhook?url=https://functions.yandexcloud.net/$(id)'
 
-all: bash-package deploy
+all: pull bash-package deploy
