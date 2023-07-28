@@ -55,28 +55,48 @@
 (defmacro make-checklist
   [& commands]
   `(let [params# ~[]]
-      (str 
-        "things:///json?data="
         (-> params#
-          ~@commands
-          (json/encode)
-          (str "&reveal=true")
-          (URLEncoder/encode "UTF-8")))))
+          ~@commands)))
 
 
 (defn parse-line
   "Example line:
    Buy list !date: milk, bread !time, poisons"
-  [line]
-  (let [code (parse-keywords line)
-        code (str/replace code #" " " ")
-        splitted (str/split code #": ")
-        project (first splitted)
-        items (str/split (last splitted) #", ")]
+  [line & {:keys [encode-reveal]}]
+  (let [code 
+        (parse-keywords line)
+        
+        code 
+        (str/replace code #" " " ")
+        
+        splitted 
+        (str/split code #": ")
+        
+        project 
+        (first splitted)
+        
+        items 
+        (str/split (last splitted) #", ")
+        
+        checklist
+        (make-checklist
+          (add-project project)
+          (add-items project items))]
     
-    (make-checklist
-      (add-project project)
-      (add-items project items))))
+    (if encode-reveal
+      
+      (URLEncoder/encode 
+        (str "things:///json?data="
+          (-> checklist
+            (json/encode)
+            (str "&reveal=true")))
+        "UTF-8")
+      
+      (str "things:///json?data="
+        (-> checklist
+          (json/encode)
+          (URLEncoder/encode "UTF-8")
+          (str "&reveal=true"))))))
 
 (comment
   
