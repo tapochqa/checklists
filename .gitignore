@@ -11,6 +11,7 @@ pom.xml.asc
 .hgignore
 .hg/
 token
+prod_token
 
 PLATFORM
 TELEGRAM_OFFSET

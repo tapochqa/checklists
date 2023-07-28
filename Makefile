@@ -24,6 +24,7 @@ JAR = target/uberjar/${NAME}.jar
 
 DATE = $(shell date +%s)
 
+PWD = $(shell pwd)
 
 platform-docker:
 	docker run -it --rm --entrypoint /bin/sh ${NI_TAG} -c 'echo `uname -s`-`uname -m`' > ${PLATFORM}
