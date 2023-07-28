@@ -60,8 +60,8 @@
         (-> params#
           ~@commands
           (json/encode)
-          (URLEncoder/encode "UTF-8"))
-        "&reveal=true")))
+          (str "&reveal=true")
+          (URLEncoder/encode "UTF-8")))))
 
 
 (defn parse-line
