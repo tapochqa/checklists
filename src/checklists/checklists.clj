@@ -25,6 +25,16 @@
    {:title title}})
 
 
+(defn into-assoc-replace
+  [coll item key val]
+  (replace
+      {item
+       (assoc item key
+         (into (key item)
+           val))}
+      coll))
+
+
 (defn add-items
   [params project items]
   
@@ -34,12 +44,26 @@
             (fn [i] (= project (-> i :attributes :title)))
             params))]
     
-    (replace
-      {desired
-       (assoc desired :attributes
-         (into (:attributes desired)
-           {:items (mapv item items)}))}
-      params)))
+    (into-assoc-replace
+      params
+      desired
+      :attributes
+      {:items (mapv item items)})))
+
+
+(defn add-deadline
+  [params project deadline]
+  (let [desired
+        (first
+          (filter
+            (fn [i] (= project (-> i :attributes :title)))
+            params))]
+
+    (into-assoc-replace
+      params
+      desired
+      :attributes
+      {:deadline deadline})))
 
 
 (defn parse-keywords
@@ -75,13 +99,21 @@
         project 
         (first splitted)
         
+        project' (str/replace project #"!" "")
+        
+        deadline
+        (if (= (last project) \!)
+          "today"
+          nil)
+        
         items 
         (str/split (last splitted) #", ")
         
         checklist
         (make-checklist
-          (add-project project)
-          (add-items project items))]
+          (add-project project')
+          (add-deadline project' deadline)
+          (add-items project' items))]
     
     (if encode-reveal
       
@@ -100,7 +132,7 @@
 
 (comment
   
-  (parse-line "Buy list !date: milk, bread !time, poisons"))
+  (parse-line "Buy list !date!: milk, bread !time, poisons"))
 
 
 
