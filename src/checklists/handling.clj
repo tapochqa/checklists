@@ -7,10 +7,12 @@
 (defn the-handler 
   "Bot logic here"
   [config {:keys [message]} trigger-id]
-  
-  (telegram/send-message 
-    config 
-    (-> message :chat :id) 
-    (checklists/parse-line (:text message))
-    
-    ))
+  (let [things-link (checklists/parse-line (:text message))]
+    (telegram/send-message 
+      config 
+      (-> message :chat :id) 
+      (str 
+        "<a href=\"https://lmnd.link/redirect?redirect=" things-link "\">"
+        things-link
+        "</a>")
+      {:parse-mode :html})))
