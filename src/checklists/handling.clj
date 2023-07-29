@@ -6,16 +6,18 @@
 
 (defn the-handler 
   "Bot logic here"
-  [config {:keys [message]} trigger-id]
-  (let []
+  [config {:keys [message edited_message]} trigger-id]
+  (let [message (conj {} message edited_message)]
     (telegram/send-message 
       config 
-      (-> message :chat :id) 
-      (str
-        "<code>"(checklists/parse-line (:text message) :encode-reveal false)"</code>"
-        "\n""\n"
-        "<a href=\"https://lmnd.link/redirect?redirect=" 
-        (checklists/parse-line (:text message) :encode-reveal true) "\">"
-        "Открыть в Фингсе"
-        "</a>")
+      (-> message :chat :id)
+      (format
+        "<code>%s</code>\n\n<a href=\"https://lmnd.link/redirect?redirect=%s\">Открыть в Фингсе</a>"
+        (checklists/parse-line (:text message) :encode-reveal false)
+        (checklists/parse-line (:text message) :encode-reveal true))
       {:parse-mode :html})))
+
+
+(comment
+  
+  )

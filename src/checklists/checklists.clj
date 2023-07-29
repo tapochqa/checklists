@@ -58,20 +58,28 @@
           (filter
             (fn [i] (= project (-> i :attributes :title)))
             params))]
-
-    (into-assoc-replace
-      params
-      desired
-      :attributes
-      {:deadline deadline})))
+    
+    
+    (-> params
+      (into-assoc-replace
+        desired
+        :attributes
+        {:deadline deadline})
+      (into-assoc-replace
+        desired
+        :attributes
+        {:when :someday})
+    
+    
+    )))
 
 
 (defn parse-keywords
   [code]
   (-> code
+    str
     (str/replace #"!date"
-      (.format (java.text.SimpleDateFormat. "dd.MM") (new java.util.Date))
-      )
+      (.format (java.text.SimpleDateFormat. "dd.MM") (new java.util.Date)))
     (str/replace #"!time"
       (.format (java.text.SimpleDateFormat. "hh:mm") (new java.util.Date)))))
 
@@ -87,9 +95,12 @@
   "Example line:
    Buy list !date: milk, bread !time, poisons"
   [line & {:keys [encode-reveal]}]
-  (let [code 
-        (parse-keywords line)
-        
+  (let [code
+        (str line)
+
+        code 
+        (parse-keywords code)
+                
         code 
         (str/replace code #" " " ")
         
@@ -103,7 +114,7 @@
         
         deadline
         (if (= (last project) \!)
-          "today"
+          :today
           nil)
         
         items 
@@ -118,13 +129,15 @@
     (if encode-reveal
       
       (URLEncoder/encode 
-        (str "things:///json?data="
+        (format 
+          "things:///json?data=%s"
           (-> checklist
             (json/encode)
             (str "&reveal=true")))
         "UTF-8")
       
-      (str "things:///json?data="
+      (format 
+        "things:///json?data=%s"
         (-> checklist
           (json/encode)
           (URLEncoder/encode "UTF-8")
@@ -132,7 +145,13 @@
 
 (comment
   
-  (parse-line "Buy list !date!: milk, bread !time, poisons"))
+  (parse-line "Buy list !date!: milk, bread !time, poisons")
+  (parse-line nil :encode-reveal true)
+  
+  (str/replace nil #"!date"
+      (.format (java.text.SimpleDateFormat. "dd.MM") (new java.util.Date))
+      )
+  )
 
 
 
