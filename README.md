@@ -1,6 +1,7 @@
-A Telegram bot.
+Телеграм-бот.
 
-All bot logic is in the `src/handling.clj`.
+Превращает строку «Список покупок: хлеб, масло, сыр» в кликабельный Фингс 3-урл.
 
-Run the bot with the one token argument like `lein run "3771492432:AAFGV8u0egGts9elsnPczV_UV9rbCCiXP9o"`.
-
+!date заменяется на дату формата 09.11.
+!time заменяется на 12-часовое время формата 04:20 без ам/пм.
+Если название проекта заканчивается на !, дедлайн сегодня.
